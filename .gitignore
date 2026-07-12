@@ -1,0 +1,4 @@
+# Local test artifacts
+app.db
+__pycache__/
+*.pyc

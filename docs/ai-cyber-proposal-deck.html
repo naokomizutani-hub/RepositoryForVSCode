@@ -1,0 +1,614 @@
+<style>
+  :root {
+    --green: #86BC25;
+    --green-deep: #5E8A14;
+    --teal: #17A2B8;
+    --teal-deep: #0E7C8C;
+
+    --bg: #F6F8F4;
+    --surface: #FFFFFF;
+    --surface-2: #EDF1E9;
+    --ink: #14201A;
+    --ink-soft: #46564D;
+    --ink-faint: #71827A;
+    --hair: #DBE2D6;
+    --rail: #101A15;
+    --rail-ink: #C7D2C6;
+    --rail-faint: #6E7C71;
+    --shadow: 0 1px 2px rgba(20,32,26,.06), 0 8px 28px rgba(20,32,26,.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E1512;
+      --surface: #16211C;
+      --surface-2: #1C2A23;
+      --ink: #EAF1E8;
+      --ink-soft: #A7B6AC;
+      --ink-faint: #7A8A7F;
+      --hair: #26332B;
+      --rail: #0A100D;
+      --rail-ink: #C7D2C6;
+      --rail-faint: #6E7C71;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 34px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F6F8F4; --surface: #FFFFFF; --surface-2: #EDF1E9;
+    --ink: #14201A; --ink-soft: #46564D; --ink-faint: #71827A; --hair: #DBE2D6;
+    --shadow: 0 1px 2px rgba(20,32,26,.06), 0 8px 28px rgba(20,32,26,.07);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1512; --surface: #16211C; --surface-2: #1C2A23;
+    --ink: #EAF1E8; --ink-soft: #A7B6AC; --ink-faint: #7A8A7F; --hair: #26332B;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 34px rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Yu Gothic", "YuGothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.7;
+    font-feature-settings: "palt" 1;
+  }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Deck frame ---------- */
+  .deck {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
+  .slide {
+    display: none;
+    min-height: 100vh;
+    padding: clamp(28px, 5vw, 72px) clamp(24px, 6vw, 96px) 92px clamp(88px, 9vw, 150px);
+    animation: fade .45s ease;
+  }
+  .slide.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .slide.active { animation: none; }
+  }
+
+  /* ---------- Left rail ---------- */
+  .rail {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: clamp(60px, 7vw, 108px);
+    background: var(--rail);
+    color: var(--rail-ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+    z-index: 40;
+  }
+  .rail .mark {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .rail .dot-logo {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 4px rgba(134,188,37,.16);
+  }
+  .rail .vert {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: .32em;
+    font-size: 10.5px;
+    color: var(--rail-faint);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .rail .pageno { text-align: center; }
+  .rail .pageno .cur { font-size: 20px; font-weight: 800; color: var(--rail-ink); }
+  .rail .pageno .tot { font-size: 11px; color: var(--rail-faint); }
+
+  /* ---------- Typography ---------- */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-size: 12px; font-weight: 800; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--ink-faint);
+    margin: 0 0 18px;
+  }
+  .eyebrow::before {
+    content: ""; width: 22px; height: 2px; background: var(--green); display: inline-block;
+  }
+  .eyebrow.teal::before { background: var(--teal); }
+  h1.title {
+    font-size: clamp(30px, 4.4vw, 58px);
+    line-height: 1.14; font-weight: 800; letter-spacing: -.01em;
+    margin: 0 0 20px; text-wrap: balance; max-width: 20ch;
+  }
+  h2.head {
+    font-size: clamp(24px, 3vw, 40px);
+    line-height: 1.2; font-weight: 800; letter-spacing: -.005em;
+    margin: 0 0 6px; text-wrap: balance; max-width: 24ch;
+  }
+  .subhead { color: var(--ink-soft); font-size: clamp(14px, 1.35vw, 18px); margin: 0 0 30px; max-width: 62ch; }
+  .lead { font-size: clamp(15px, 1.5vw, 19px); color: var(--ink-soft); max-width: 64ch; }
+
+  /* ---------- Building blocks ---------- */
+  .grid { display: grid; gap: clamp(14px, 1.6vw, 22px); }
+  .cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) {
+    .cols-2, .cols-3, .cols-4 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: clamp(16px, 1.8vw, 26px);
+    box-shadow: var(--shadow);
+  }
+  .card.flat { box-shadow: none; }
+  .card .k {
+    font-size: 12px; font-weight: 800; letter-spacing: .04em; color: var(--ink-faint);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .card h3 { font-size: clamp(16px, 1.5vw, 20px); font-weight: 800; margin: 0 0 8px; letter-spacing: -.005em; }
+  .card p { margin: 0; font-size: clamp(13px, 1.25vw, 15px); color: var(--ink-soft); }
+  .card .num {
+    font-size: 30px; font-weight: 800; line-height: 1;
+    color: var(--green); margin-bottom: 10px;
+  }
+  .card.teal .num { color: var(--teal); }
+
+  .accent-top { border-top: 3px solid var(--green); }
+  .accent-top.teal { border-top: 3px solid var(--teal); }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--surface-2); color: var(--ink-soft);
+    border-radius: 999px; padding: 5px 13px;
+    font-size: 12.5px; font-weight: 700;
+  }
+  .chip .d { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .chip.teal .d { background: var(--teal); }
+
+  ul.clean { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  ul.clean li { position: relative; padding-left: 22px; font-size: clamp(13px, 1.25vw, 15px); color: var(--ink-soft); }
+  ul.clean li::before {
+    content: ""; position: absolute; left: 0; top: .62em;
+    width: 8px; height: 8px; border-radius: 2px; background: var(--green);
+  }
+  ul.clean.teal li::before { background: var(--teal); }
+  ul.clean li b { color: var(--ink); font-weight: 800; }
+
+  .two-wheel { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; }
+  @media (max-width: 900px) { .two-wheel { grid-template-columns: 1fr; } }
+  .wheel-link {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 18px; color: var(--ink-faint); font-weight: 800; font-size: 22px;
+  }
+  @media (max-width: 900px) { .wheel-link { padding: 6px 0; } }
+
+  /* Table */
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--hair); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: clamp(12.5px, 1.2vw, 15px); }
+  th, td { text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--hair); vertical-align: top; }
+  thead th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); font-weight: 800; background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--ink); font-weight: 800; }
+  .col-mark { color: var(--ink-faint); font-weight: 700; }
+
+  /* Phase / timeline */
+  .phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 8px; }
+  @media (max-width: 900px) { .phases { grid-template-columns: 1fr 1fr; } }
+  .phase {
+    padding: 18px 18px 20px; border-left: 2px solid var(--hair); position: relative;
+  }
+  .phase:first-child { border-left: none; }
+  .phase .t { font-size: 12px; font-weight: 800; color: var(--green); letter-spacing: .05em; }
+  .phase .r { font-size: 13px; color: var(--ink-faint); margin: 2px 0 10px; }
+  .phase p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+  .phase::before {
+    content: ""; position: absolute; left: -6px; top: 20px; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--green); display: none;
+  }
+
+  /* GTM map */
+  .gtm-row { display: grid; grid-template-columns: 170px 1fr 1fr; border-bottom: 1px solid var(--hair); }
+  .gtm-row:last-child { border-bottom: none; }
+  .gtm-head { grid-template-columns: 170px 1fr 1fr; }
+  .gtm-head > div { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); padding: 12px 16px; }
+  .gtm-axis { font-weight: 800; padding: 16px; font-size: 14px; display: flex; align-items: center; background: var(--surface-2); }
+  .gtm-cell { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  @media (max-width: 900px) {
+    .gtm-row, .gtm-head { grid-template-columns: 1fr; }
+    .gtm-axis { background: var(--surface-2); }
+  }
+  .tag { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 8px; background: var(--surface-2); color: var(--ink-soft); }
+  .tag.done { border-left: 3px solid var(--green); }
+  .tag.next { border-left: 3px solid var(--teal); }
+
+  /* Approval asks */
+  .asks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 10px; }
+  @media (max-width: 900px) { .asks { grid-template-columns: 1fr; } }
+  .ask {
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 16px;
+    padding: 26px 24px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .ask::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: linear-gradient(var(--green), var(--teal)); }
+  .ask .n { font-size: 13px; font-weight: 800; color: var(--ink-faint); letter-spacing: .05em; }
+  .ask h3 { font-size: clamp(17px, 1.7vw, 22px); font-weight: 800; margin: 8px 0 8px; letter-spacing: -.01em; }
+  .ask p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+  .kicker-quote {
+    border-left: 3px solid var(--green); padding: 6px 0 6px 18px; margin: 26px 0 0;
+    font-size: clamp(15px, 1.5vw, 19px); font-weight: 700; color: var(--ink); max-width: 60ch; text-wrap: balance;
+  }
+
+  .metrics { display: flex; gap: clamp(20px, 4vw, 60px); flex-wrap: wrap; margin-top: 34px; }
+  .metric .v { font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+  .metric .v.g { color: var(--green); }
+  .metric .v.t { color: var(--teal); }
+  .metric .l { font-size: 13px; color: var(--ink-faint); margin-top: 7px; max-width: 22ch; }
+
+  /* Cover */
+  .cover { display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 172px); }
+  .cover .badge {
+    align-self: flex-start; display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid var(--hair); background: var(--surface); border-radius: 999px;
+    padding: 8px 16px; font-size: 12.5px; font-weight: 800; letter-spacing: .04em; color: var(--ink-soft);
+    margin-bottom: 30px;
+  }
+  .cover .badge .d { width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
+  .cover .en { font-size: clamp(13px, 1.4vw, 17px); font-weight: 700; letter-spacing: .06em; color: var(--ink-faint); margin: 0 0 14px; }
+  .cover .meta { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--hair); }
+  .cover .meta div .mk { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-faint); font-weight: 800; }
+  .cover .meta div .mv { font-size: 15px; font-weight: 700; margin-top: 4px; }
+  .grad-word { background: linear-gradient(100deg, var(--green), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    position: fixed; bottom: 0; left: clamp(60px, 7vw, 108px); right: 0;
+    height: 60px; display: flex; align-items: center; gap: 16px;
+    padding: 0 clamp(20px, 4vw, 56px);
+    background: linear-gradient(to top, var(--bg) 55%, transparent);
+    z-index: 40;
+  }
+  .progress { flex: 1; height: 4px; background: var(--hair); border-radius: 999px; overflow: hidden; }
+  .progress .bar { height: 100%; width: 10%; background: linear-gradient(90deg, var(--green), var(--teal)); border-radius: 999px; transition: width .35s ease; }
+  .navbtns { display: flex; gap: 8px; }
+  .navbtn {
+    appearance: none; border: 1px solid var(--hair); background: var(--surface); color: var(--ink);
+    width: 40px; height: 40px; border-radius: 10px; font-size: 17px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s, transform .1s;
+  }
+  .navbtn:hover { border-color: var(--green); }
+  .navbtn:active { transform: translateY(1px); }
+  .navbtn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .navbtn:disabled { opacity: .35; cursor: default; }
+
+  .dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 9px; z-index: 40; }
+  .dots button {
+    width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; cursor: pointer;
+    background: var(--hair); transition: transform .15s, background .15s;
+  }
+  .dots button.on { background: var(--green); transform: scale(1.35); }
+  .dots button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  @media (max-width: 720px) { .dots { display: none; } }
+
+  .themebtn {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    appearance: none; border: 1px solid var(--hair); background: var(--surface); color: var(--ink-soft);
+    border-radius: 10px; height: 38px; padding: 0 14px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  }
+  .themebtn:hover { border-color: var(--green); }
+  .themebtn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .hint { position: fixed; bottom: 70px; right: 18px; font-size: 11.5px; color: var(--ink-faint); z-index: 30; }
+  @media (max-width: 720px) { .hint { display: none; } }
+</style>
+
+<button class="themebtn" id="themeBtn" aria-label="テーマ切替">◐ テーマ</button>
+
+<nav class="rail" aria-hidden="true">
+  <div class="mark">
+    <span class="dot-logo"></span>
+    <span class="vert">AI × Cyber</span>
+  </div>
+  <div class="pageno"><span class="cur" id="railCur">01</span><div class="tot">/ 10</div></div>
+</nav>
+
+<div class="dots" id="dots" role="tablist" aria-label="スライド"></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 COVER -->
+  <section class="slide active">
+    <div class="cover">
+      <span class="badge"><span class="d"></span> 新規サービス立ち上げ提案 ／ 承認依頼</span>
+      <p class="en">AI FOR CYBER, CYBER FOR AI</p>
+      <h1 class="title">AIで守りを高度化し、<br><span class="grad-word">AIそのものを守る。</span></h1>
+      <p class="lead">二重に立ち上がる市場機会に、両輪の統合サービスで先行者ポジションを取る。経営層への正式承認を依頼する事業企画。</p>
+      <div class="meta">
+        <div><div class="mk">想定読者</div><div class="mv">経営層(意思決定者)</div></div>
+        <div><div class="mk">目的</div><div class="mv">新規サービスの立ち上げ承認</div></div>
+        <div><div class="mk">日付</div><div class="mv tnum">2026年7月13日</div></div>
+        <div><div class="mk">ステータス</div><div class="mv">Decision Required</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 EXEC SUMMARY -->
+  <section class="slide">
+    <p class="eyebrow">01 ／ エグゼクティブサマリー</p>
+    <h2 class="head">承認いただきたいのは、この3点。</h2>
+    <p class="subhead">AIはサイバー攻防の前提を変えた。攻撃はAIで高度化・量産化し、AIを業務に組み込むほどAI自体が新たな攻撃対象になる。両輪で応える体制を、いま立ち上げる。</p>
+    <div class="asks">
+      <div class="ask"><div class="n">承認事項 01</div><h3>正式オファリング化</h3><p>「AI for Cyber, Cyber for AI」を正式サービスとして立ち上げる。</p></div>
+      <div class="ask"><div class="n">承認事項 02</div><h3>人材への投資</h3><p>Cyber×AI人材の育成・獲得。中核となるFDEチームを新設する。</p></div>
+      <div class="ask"><div class="n">承認事項 03</div><h3>三位一体デリバリ</h3><p>米国プラットフォーム・インドデリバリ・国内現場適合のモデルを採用する。</p></div>
+    </div>
+    <p class="kicker-quote">意思決定の遅れは、市場機会とタレント獲得機会の双方の逸失に直結する。垂直立ち上げの好機は、いま、ここにある。</p>
+  </section>
+
+  <!-- 3 BACKGROUND -->
+  <section class="slide">
+    <p class="eyebrow">02 ／ 背景 — 市場動向</p>
+    <h2 class="head">なぜ、いま、この投資なのか。</h2>
+    <p class="subhead">市場は「AIでサイバーを守る」需要と「AIそのものを守る」需要が同時に立ち上がる、稀な二重成長局面にある。</p>
+    <div class="grid cols-4">
+      <div class="card accent-top"><div class="num tnum">01</div><h3>攻撃の高度化</h3><p>フィッシング精緻化、マルウェア自動生成、脆弱性探索の自動化。攻撃の量と質が同時に跳ね上がる。</p></div>
+      <div class="card accent-top"><div class="num tnum">02</div><h3>規制強化</h3><p>EU AI Act等のAI規制、重要インフラ要求、データ主権。攻めと守りの同時充足が求められる。</p></div>
+      <div class="card accent-top"><div class="num tnum">03</div><h3>フロンティアAIの興隆</h3><p>防御の生産性を上げる一方、攻撃側にも同等の能力を付与。攻防の非対称性が拡大する。</p></div>
+      <div class="card accent-top teal"><div class="num tnum">04</div><h3>アタックサーフェス拡大</h3><p>LLM/AIエージェント導入で、プロンプトインジェクション等の新たな攻撃面が生まれる。</p></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="v g">2つ</div><div class="l">同時に立ち上がる需要領域(守る／守られる)</div></div>
+      <div class="metric"><div class="v t">Security<br>by Design</div><div class="l">AI利活用に最初から組み込む設計思想</div></div>
+    </div>
+  </section>
+
+  <!-- 4 CHALLENGE / WHY DELOITTE -->
+  <section class="slide">
+    <p class="eyebrow">03 ／ 課題設定</p>
+    <h2 class="head">競合の空白地帯に、垂直立ち上げで入る。</h2>
+    <p class="subhead">単独領域の提供者は多いが、両輪を一体で束ねるプレイヤーは限られる。ここが当社の機会である。</p>
+    <div class="grid cols-2" style="align-items:start">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>領域</th><th>競合の状況</th><th>当社の機会(空白)</th></tr></thead>
+          <tbody>
+            <tr><td><b>AI for Cyber</b></td><td>個別ソリューション提供は進む</td><td class="col-mark">戦略〜運用の一貫提供・経営訴求</td></tr>
+            <tr><td><b>Cyber for AI</b></td><td>助言・ポリシー策定が中心</td><td class="col-mark">技術的な実装レベルの統制</td></tr>
+            <tr><td><b>両輪の統合</b></td><td>いずれか単独が大半</td><td class="col-mark">一体提供 × 総合力で束ねる</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="k">Why デロイト — どう実現するか</div>
+        <p style="margin-bottom:14px">単発のツール導入ではなく、経営アジェンダとして戦略・実装・運用を一気通貫で提供する。</p>
+        <ul class="clean">
+          <li><b>グローバル連携</b> — 米国プラットフォーム・各国知見を国内に導入</li>
+          <li><b>アライアンス</b> — フロンティアAI/製品ベンダー提携で自社開発に依存しない機動力</li>
+          <li><b>総合力</b> — Strategy / Risk / AI&Data 横断の「面」での提供力</li>
+        </ul>
+        <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+          <span class="chip"><span class="d"></span> AI活用の底上げ</span>
+          <span class="chip teal"><span class="d"></span> 人材不足の解消</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 APPROACH A -->
+  <section class="slide">
+    <p class="eyebrow">04a ／ アプローチ</p>
+    <h2 class="head">AI for Cyber — 検知・対応・運用にAIを組み込む。</h2>
+    <p class="subhead">防御オペレーションをAIで再設計し、生産性とスピードで攻撃側に追随・凌駕する。</p>
+    <div class="grid cols-2" style="align-items:start">
+      <div class="card accent-top">
+        <div class="k">組み込みの軸</div>
+        <ul class="clean">
+          <li><b>フロンティアAIを経営訴求</b> — グループ横断で一貫したメッセージを経営層へ</li>
+          <li><b>アライアンス活用</b> — 提携AIソリューションで立ち上げ速度を最大化</li>
+          <li><b>デリバリ変革(インド)</b> — 自動化 × オフショアでSOCの経済構造を刷新</li>
+        </ul>
+      </div>
+      <div class="card accent-top">
+        <div class="k">旗艦オファリング</div>
+        <ul class="clean">
+          <li><b>CTEM</b> — AIエージェントを活用した継続的脅威エクスポージャ管理</li>
+          <li><b>Remediation Factory</b> — AI駆動テスト環境による脆弱性スキャン・修正の工場化</li>
+          <li><b>Secure SDLC</b> — 開発ライフサイクルへのセキュリティ内在化</li>
+        </ul>
+      </div>
+    </div>
+    <p class="kicker-quote">従来型SOCの経済構造を、AI × デリバリモデル変革で刷新する。</p>
+  </section>
+
+  <!-- 6 APPROACH B + synergy -->
+  <section class="slide">
+    <p class="eyebrow teal">04b ／ アプローチ</p>
+    <h2 class="head">Cyber for AI — AI活用に、最初から統制を組み込む。</h2>
+    <p class="subhead">「攻めのAI活用」を止めずに「守り」を成立させる。AI&Data部門と連携し、利活用ニーズにセキュリティをセットで訴求する。</p>
+    <div class="grid cols-2" style="align-items:start">
+      <div class="card accent-top teal">
+        <div class="k">注力テーマ</div>
+        <ul class="clean teal">
+          <li><b>AI CoEへの組み込み</b> — CoE設計段階からセキュリティを内在化</li>
+          <li><b>AI Ready基盤</b> — 非構造データを含む基盤へプライバシー/セキュリティを実装</li>
+          <li><b>AI固有脅威対応</b> — ガバナンス検討にプロンプト注入・データ汚染等を組み込む</li>
+          <li><b>戦略支援</b> — セキュリティ部門のAIセキュリティ・ロードマップ策定を支援</li>
+        </ul>
+      </div>
+      <div class="card teal accent-top teal">
+        <div class="k">両輪のシナジー — なぜ一体提供か</div>
+        <div class="two-wheel" style="margin-top:6px">
+          <div>
+            <span class="chip"><span class="d"></span> AI for Cyber</span>
+            <p style="margin-top:10px; font-size:14px; color:var(--ink-soft)">防御知見がガバナンス設計を強くする</p>
+          </div>
+          <div class="wheel-link">⇄</div>
+          <div>
+            <span class="chip teal"><span class="d"></span> Cyber for AI</span>
+            <p style="margin-top:10px; font-size:14px; color:var(--ink-soft)">顧客接点が防御サービスの需要を生む</p>
+          </div>
+        </div>
+        <p style="margin-top:18px; font-size:14px; color:var(--ink)"><b>単独提供では得られないこの循環が、参入障壁となる。</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 EXECUTION -->
+  <section class="slide">
+    <p class="eyebrow">05 ／ 実行計画</p>
+    <h2 class="head">短期で基盤を、中期でスケールを。</h2>
+    <p class="subhead">フェーズを分け、立ち上げ速度・再現性・コストを段階的に確立する。</p>
+    <div class="card flat" style="padding:0; border-radius:14px; overflow:hidden">
+      <div class="phases">
+        <div class="phase"><div class="t tnum">0–3ヶ月</div><div class="r">Phase 1 / 基盤</div><p>FDEチーム組成、アライアンス締結、旗艦オファリングの型化。</p></div>
+        <div class="phase"><div class="t tnum">3–6ヶ月</div><div class="r">Phase 1 / 実証</div><p>ライトハウス顧客での初期案件、デリバリモデル試験稼働。</p></div>
+        <div class="phase"><div class="t tnum">6–12ヶ月</div><div class="r">Phase 2 / 拡大</div><p>インド・米国連携の本格化、育成プログラム運用、実績発信。</p></div>
+        <div class="phase"><div class="t tnum">12–18ヶ月</div><div class="r">Phase 2 / 定着</div><p>両輪の相互送客定着、スケール、次期投資判断。</p></div>
+      </div>
+    </div>
+    <div class="grid cols-3" style="margin-top:22px">
+      <div class="card"><div class="k">最重要リソース</div><h3>人材</h3><p>育成プログラム × 外部獲得。FDEチームの新設。</p></div>
+      <div class="card"><div class="k">外部連携</div><h3>アライアンス</h3><p>フロンティアAI・セキュリティ製品ベンダー提携。</p></div>
+      <div class="card teal"><div class="k">投資</div><h3>初期投資</h3><p>人材・育成・アライアンス費用(詳細は承認後に確定)。</p></div>
+    </div>
+  </section>
+
+  <!-- 8 DELIVERY / ORG -->
+  <section class="slide">
+    <p class="eyebrow">06 ／ 推進体制</p>
+    <h2 class="head">「作る・量産する・合わせ込む」の分業。</h2>
+    <p class="subhead">立ち上げ速度・コスト・顧客適合を同時に満たす三位一体のデリバリモデル。中核はFDEチーム。</p>
+    <div class="grid cols-3" style="align-items:start">
+      <div class="card accent-top teal"><div class="k">米国</div><h3>作る</h3><p>プロダクト/プラットフォームを提供。車輪の再発明を避ける。</p></div>
+      <div class="card accent-top teal"><div class="k">インド</div><h3>量産する</h3><p>プラットフォームを活用したデリバリ・実装・運用。コスト競争力とスケール。</p></div>
+      <div class="card accent-top"><div class="k">日本 / FDEチーム</div><h3>合わせ込む</h3><p>顧客現場でLLM/AIエージェントの設定をニーズに応じて調整する。</p></div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="k">FDEチーム(Forward Deployed Engineer)— 新設</div>
+      <p>AIエージェントを活用した脆弱性管理(CTEM)やSecure SDLCを<b style="color:var(--ink)">日本国内で提供する</b>ための中核チーム。顧客現場に入り込む実装力を持ち、AI&Data・Risk Advisory・Strategyを横断して両輪の相互送客を仕組み化する。</p>
+    </div>
+  </section>
+
+  <!-- 9 GTM -->
+  <section class="slide">
+    <p class="eyebrow teal">07 ／ Go To Market</p>
+    <h2 class="head">経営層のクライアントジャーニーとして連動させる。</h2>
+    <p class="subhead">LCSP(アカウントリーダー)経由で経営層に直接リーチ。活動軸を縦、時系列を横にマッピングし、認知→関心→検討→導入を設計する。</p>
+    <div class="card flat" style="padding:0; overflow:hidden">
+      <div class="tbl-wrap" style="box-shadow:none; border:none">
+        <div style="min-width:640px">
+          <div class="gtm-row gtm-head"><div>活動軸</div><div>実施済 / 進行中</div><div>今後の施策</div></div>
+          <div class="gtm-row">
+            <div class="gtm-axis">ブランド /<br>ソートリーダーシップ</div>
+            <div class="gtm-cell"><span class="tag done">WSJ記事 "The New Economics of Cyber Risk"</span><span class="tag done">ブログ "Decision Latency"</span><span class="tag done">FSI POV(進行中)</span></div>
+            <div class="gtm-cell"><span class="tag next">業界横断POVの拡充</span><span class="tag next">カンファレンス登壇</span></div>
+          </div>
+          <div class="gtm-row">
+            <div class="gtm-axis">アライアンス</div>
+            <div class="gtm-cell"><span class="tag done">Anthropic トレーニング</span><span class="tag done">Deloitte–Anthropic GTMソリューション開発(進行中)</span></div>
+            <div class="gtm-cell"><span class="tag next">主要顧客の技術的負債(脆弱性)への共同対応</span><span class="tag next">AI駆動 Remediation Factory</span></div>
+          </div>
+          <div class="gtm-row">
+            <div class="gtm-axis">クライアント /<br>コミュニティ</div>
+            <div class="gtm-cell"><span class="tag done">LCSP all hands(Frontier AI / Cyber)</span></div>
+            <div class="gtm-cell"><span class="tag next">CISO Forum の定例開催</span><span class="tag next">各国固有のコスト / データ主権対応</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; gap:18px; margin-top:14px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-faint)">
+      <span class="chip"><span class="d"></span> 実施済 / 進行中</span>
+      <span class="chip teal"><span class="d"></span> 今後の施策</span>
+    </div>
+  </section>
+
+  <!-- 10 CLOSING -->
+  <section class="slide">
+    <p class="eyebrow">承認のお願い</p>
+    <h2 class="head">両輪の統合 × 総合力 × 三位一体デリバリで、先行者になる。</h2>
+    <p class="subhead">当社のAI活用の底上げと人材不足の解消も、本サービスの立ち上げを通じて同時に前進する。</p>
+    <div class="asks">
+      <div class="ask"><div class="n">承認事項 01</div><h3>正式オファリング化</h3><p>「AI for Cyber, Cyber for AI」を正式サービスとして立ち上げる。</p></div>
+      <div class="ask"><div class="n">承認事項 02</div><h3>人材への投資</h3><p>育成・獲得投資。FDEチームの新設を含む。</p></div>
+      <div class="ask"><div class="n">承認事項 03</div><h3>三位一体デリバリ</h3><p>米国・インド・日本のデリバリモデルを採用する。</p></div>
+    </div>
+    <p class="kicker-quote">垂直立ち上げの好機は、いま、ここにある。 — ご承認をお願いしたい。</p>
+  </section>
+
+</div>
+
+<div class="controls">
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="tnum" style="font-size:13px;color:var(--ink-faint);font-weight:700"><span id="cur">1</span> / <span id="tot">10</span></div>
+  <div class="navbtns">
+    <button class="navbtn" id="prev" aria-label="前へ">‹</button>
+    <button class="navbtn" id="next" aria-label="次へ">›</button>
+  </div>
+</div>
+<div class="hint">← → キーで移動</div>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var n = slides.length, i = 0;
+    var bar = document.getElementById('bar');
+    var cur = document.getElementById('cur');
+    var railCur = document.getElementById('railCur');
+    var prev = document.getElementById('prev');
+    var next = document.getElementById('next');
+    var dotsWrap = document.getElementById('dots');
+    document.getElementById('tot').textContent = n;
+
+    var dots = [];
+    for (var d = 0; d < n; d++) {
+      (function (idx) {
+        var b = document.createElement('button');
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', 'スライド ' + (idx + 1));
+        b.addEventListener('click', function () { go(idx); });
+        dotsWrap.appendChild(b);
+        dots.push(b);
+      })(d);
+    }
+
+    function pad(x) { return (x < 10 ? '0' : '') + x; }
+    function render() {
+      slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+      dots.forEach(function (b, idx) { b.classList.toggle('on', idx === i); });
+      bar.style.width = ((i + 1) / n * 100) + '%';
+      cur.textContent = i + 1;
+      railCur.textContent = pad(i + 1);
+      prev.disabled = (i === 0);
+      next.disabled = (i === n - 1);
+      window.scrollTo(0, 0);
+    }
+    function go(x) { i = Math.max(0, Math.min(n - 1, x)); render(); }
+
+    prev.addEventListener('click', function () { go(i - 1); });
+    next.addEventListener('click', function () { go(i + 1); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { go(i + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(i - 1); }
+      else if (e.key === 'Home') { go(0); }
+      else if (e.key === 'End') { go(n - 1); }
+    });
+
+    // Theme toggle
+    var root = document.documentElement;
+    var tb = document.getElementById('themeBtn');
+    tb.addEventListener('click', function () {
+      var isDark = root.getAttribute('data-theme') === 'dark'
+        || (root.getAttribute('data-theme') == null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    });
+
+    render();
+  })();
+</script>
